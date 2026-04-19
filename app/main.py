@@ -4,18 +4,23 @@ from app.models.user import User
 from app.models import bus as bus_model
 from app.models import route as route_model
 from app.services.auth_service import hash_password
-from app.routes import auth, bus, route
+from app.routes import auth, bus, route,stop,location
 
-# ✅ Step 1: Create all tables in the database
-Base.metadata.create_all(bind=engine)
 
-# ✅ Step 2: Create the FastAPI app
+
+
+# ✅ Step 1: Create the FastAPI app
 app = FastAPI()
 
-# ✅ Step 3: Register all routers AFTER app is created
+# ✅ Step 2: Create all tables in the database
+Base.metadata.create_all(bind=engine)
+
+# ✅ Step 3: Register all routers
+app.include_router(stop.router)
 app.include_router(auth.router)
 app.include_router(bus.router)
 app.include_router(route.router)
+app.include_router(location.router)
 
 @app.get("/")
 def home():

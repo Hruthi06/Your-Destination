@@ -29,3 +29,21 @@ def create_route(
 @router.get("/")
 def get_routes(db: Session = Depends(get_db)):
     return db.query(Route).all()
+
+from app.models.stop import Stop
+
+@router.get("/{route_id}/stops")
+def get_route_stops(route_id: int, db: Session = Depends(get_db)):
+    route = db.query(Route).filter(Route.id == route_id).first()
+
+    if not route:
+        raise HTTPException(status_code=404, detail="Route not found")
+
+    stops = db.query(Stop).filter(Stop.route_id == route_id).all()
+
+    return {
+        "route": route.name,
+        "source": route.source,
+        "destination": route.destination,
+        "stops": stops
+    }
