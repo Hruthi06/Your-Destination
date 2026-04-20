@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Destination - Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      margin: 0;
+    }
+
+    .navbar {
+      background: #222;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 10px;
+      display: inline-block;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Your Destination</h2>
+  <div>
+    <a href="map.html" style="color:white; margin-right:15px;">Track Bus</a>
+    <a href="admin.html" style="color:white;">Admin</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card" onclick="location.href='map.html'">
+    🚍 Track Bus
+  </div>
+
+  <div class="card" onclick="alert('Coming Soon')">
+    📍 View Routes
+  </div>
+</div>
+
+</body>
+</html>

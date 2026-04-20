@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Destination - Map View</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<select id="busSelect" onchange="changeBus()" style="margin: 10px; padding: 5px;">
+  <option value="1">Bus 1</option>
+  <option value="2">Bus 2</option>
+</select>
+<div style="display: flex; height: 100vh;">
+
+  <!-- SIDE PANEL -->
+  <div id="routePanel" style="width: 300px; background: #f4f4f4; padding: 15px; overflow-y: auto;">
+    <h3>Route Info</h3>
+    <div id="routeDetails">Loading...</div>
+  </div>
+
+  <!-- MAP -->
+  <div id="map" style="flex: 1;"></div>
+
+</div>
+
+<script>
+  let map;
+  let marker;
+  let currentPosition = [13.3409, 77.1010];
+  let currentBusId = 1;
+  let routeMarkers = [];
+  let routeLine;
+
+  function changeBus() {
+    currentBusId = document.getElementById("busSelect").value;
+    loadRoute();
+    updateLocation();
+  }
+
+  function initMap() {
+    map = L.map('map').setView([13.3409, 77.1010], 13);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors, © CARTO'
+    }).addTo(map);
+
+    let busIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61231.png',
+      iconSize: [35, 35]
+    });
+
+    marker = L.marker(currentPosition, { icon: busIcon }).addTo(map);
+
+    loadRoute();
+
+    setInterval(updateLocation, 3000);
+  }
+
+  async function loadRoute() {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/routes/${currentBusId}/stops`);
+      const data = await response.json();
+      
+      // If the API returns an object { "stops": [...] } use that, otherwise if it's an array use it directly
+      const stops = data.stops || data;
+
+      // 1. Connect API and update the side panel
+      let html = "<ul>";
+      stops.forEach((stop, index) => {
+        html += `<li>${index + 1}. ${stop.name}</li>`;
+      });
+      html += "</ul>";
+      document.getElementById("routeDetails").innerHTML = html;
+
+      // 2. Also plot the route on the Leaflet map
+      routeMarkers.forEach(m => map.removeLayer(m));
+      routeMarkers = [];
+      if (routeLine) {
+        map.removeLayer(routeLine);
+      }
+
+      let latlngs = [];
+      stops.forEach(stop => {
+        let latlng = [stop.latitude, stop.longitude];
+        let stopMarker = L.marker(latlng).addTo(map).bindPopup(stop.name);
+        routeMarkers.push(stopMarker);
+        latlngs.push(latlng);
+      });
+
+      if (latlngs.length > 0) {
+        routeLine = L.polyline(latlngs, { color: 'blue' }).addTo(map);
+        map.fitBounds(routeLine.getBounds());
+      }
+
+    } catch (error) {
+      console.error("Error loading route:", error);
+      document.getElementById("routeDetails").innerHTML = "Error loading route.";
+    }
+  }
+
+  async function updateLocation() {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/location/${currentBusId}`);
+      const data = await res.json();
+
+      let newPosition = [data.latitude, data.longitude];
+
+      animateMarker(currentPosition, newPosition);
+
+      currentPosition = newPosition;
+
+    } catch (err) {
+      console.log("Tracking error:", err);
+    }
+  }
+
+  function animateMarker(start, end) {
+    let steps = 50;
+    let i = 0;
+
+    let latStep = (end[0] - start[0]) / steps;
+    let lngStep = (end[1] - start[1]) / steps;
+
+    let interval = setInterval(() => {
+      if (i >= steps) {
+        clearInterval(interval);
+        return;
+      }
+
+      let lat = start[0] + latStep * i;
+      let lng = start[1] + lngStep * i;
+
+      marker.setLatLng([lat, lng]);
+
+      i++;
+    }, 50);
+  }
+
+  window.onload = initMap;
+</script>
+
+</body>
+</html>
