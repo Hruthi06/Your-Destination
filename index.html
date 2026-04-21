@@ -27,11 +27,26 @@
   let currentPosition = [13.3409, 77.1010];
 
   function initMap() {
-    map = L.map('map').setView([13.3409, 77.1010], 13);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    let streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap contributors, © CARTO'
-    }).addTo(map);
+    });
+
+    let satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    map = L.map('map', {
+      center: [13.3409, 77.1010],
+      zoom: 13,
+      layers: [streetLayer]
+    });
+
+    let baseMaps = {
+      "Street Map": streetLayer,
+      "Geographical (Satellite)": satelliteLayer
+    };
+
+    L.control.layers(baseMaps).addTo(map);
 
     let busIcon = L.icon({
       iconUrl: 'https://cdn-icons-png.flaticon.com/512/61/61231.png',

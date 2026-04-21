@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Manage Routes</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .navbar {
+      background: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 15px;
+    }
+    #loginSection {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      background: #f4f4f4;
+    }
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+    .login-box input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .btn {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    #adminSection {
+      display: none;
+      flex: 1;
+      flex-direction: row;
+    }
+    #sidebar {
+      width: 350px;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    #map {
+      flex: 1;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .form-group input {
+      width: 95%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .info-box {
+      background: #e9f7ef;
+      border-left: 4px solid #28a745;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <h2>Admin Panel</h2>
+  <div>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="#" onclick="logout()" id="logoutBtn" style="display:none;">Logout</a>
+  </div>
+</div>
+
+<!-- LOGIN SECTION -->
+<div id="loginSection">
+  <div class="login-box">
+    <h3>Admin Login</h3>
+    <input type="email" id="email" placeholder="Email (admin@admin.com)" value="admin@admin.com">
+    <input type="password" id="password" placeholder="Password (admin123)">
+    <button class="btn" onclick="login()">Login</button>
+    <p id="loginError" style="color:red; display:none;">Invalid credentials</p>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD SECTION -->
+<div id="adminSection">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <h3>Add New Stop</h3>
+    <div class="info-box">
+      <strong>Tip:</strong> Click anywhere on the map to automatically get the Stop Name and Coordinates!
+    </div>
+    
+    <div class="form-group">
+      <label>Route ID</label>
+      <input type="number" id="routeId" value="1">
+    </div>
+    <div class="form-group">
+      <label>Stop Name (Auto-filled)</label>
+      <input type="text" id="stopName" placeholder="Click map to auto-fill">
+    </div>
+    <div class="form-group">
+      <label>Latitude</label>
+      <input type="text" id="lat" readonly>
+    </div>
+    <div class="form-group">
+      <label>Longitude</label>
+      <input type="text" id="lng" readonly>
+    </div>
+    <button class="btn" style="background:#28a745;" onclick="saveStop()">Save Stop</button>
+    <p id="saveStatus" style="margin-top:10px; font-weight:bold;"></p>
+  </div>
+
+  <!-- MAP -->
+  <div id="map"></div>
+</div>
+
+<script>
+  let map;
+  let clickMarker;
+
+  // Check if already logged in
+  window.onload = () => {
+    const token = localStorage.getItem("admin_token");
+    if (token) {
+      showAdminPanel();
+    }
+  };
+
+  async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("admin_token", data.access_token);
+        showAdminPanel();
+      } else {
+        document.getElementById("loginError").style.display = "block";
+      }
+    } catch (err) {
+      console.error(err);
+      document.getElementById("loginError").innerText = "Connection error";
+      document.getElementById("loginError").style.display = "block";
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("admin_token");
+    document.getElementById("loginSection").style.display = "flex";
+    document.getElementById("adminSection").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "none";
+  }
+
+  function showAdminPanel() {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("adminSection").style.display = "flex";
+    document.getElementById("logoutBtn").style.display = "inline";
+    initMap();
+  }
+
+  function initMap() {
+    // Only init map once
+    if (map) return;
+
+    let streetLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors, © CARTO'
+    });
+
+    let satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    map = L.map('map', {
+      center: [13.3409, 77.1010],
+      zoom: 13,
+      layers: [streetLayer]
+    });
+
+    let baseMaps = {
+      "Street Map": streetLayer,
+      "Geographical (Satellite)": satelliteLayer
+    };
+
+    L.control.layers(baseMaps).addTo(map);
+
+    // Map Click Event
+    map.on('click', async function(e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+
+      // Place Marker
+      if (clickMarker) map.removeLayer(clickMarker);
+      clickMarker = L.marker([lat, lng]).addTo(map);
+
+      // Fill Coordinates
+      document.getElementById("lat").value = lat.toFixed(6);
+      document.getElementById("lng").value = lng.toFixed(6);
+
+      // Auto-name stop using Reverse Geocoding
+      document.getElementById("stopName").value = "Fetching name...";
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        
+        // Use a short, relevant part of the address (e.g. road or suburb or display_name)
+        let name = data.address.road || data.address.suburb || data.address.city || data.display_name.split(',')[0];
+        document.getElementById("stopName").value = name;
+      } catch (err) {
+        document.getElementById("stopName").value = "Unknown Location";
+      }
+    });
+  }
+
+  async function saveStop() {
+    const token = localStorage.getItem("admin_token");
+    if (!token) return logout();
+
+    const name = document.getElementById("stopName").value;
+    const lat = parseFloat(document.getElementById("lat").value);
+    const lng = parseFloat(document.getElementById("lng").value);
+    const routeId = parseInt(document.getElementById("routeId").value);
+
+    if (!name || isNaN(lat) || isNaN(lng) || isNaN(routeId)) {
+      alert("Please click the map to select a valid stop location first.");
+      return;
+    }
+
+    const payload = {
+      name: name,
+      latitude: lat,
+      longitude: lng,
+      route_id: routeId
+    };
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/stops/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        document.getElementById("saveStatus").innerText = "✅ Stop Saved Successfully!";
+        document.getElementById("saveStatus").style.color = "green";
+        setTimeout(() => { document.getElementById("saveStatus").innerText = ""; }, 3000);
+      } else {
+        const errorData = await res.json();
+        alert("Failed to save stop: " + JSON.stringify(errorData));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server.");
+    }
+  }
+</script>
+
+</body>
+</html>
