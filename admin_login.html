@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Your Destination</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0F1720;
+            --primary: #3DD4C6;
+            --accent: #6366f1;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(15, 23, 32, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .admin-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(61, 212, 198, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            border: 1px solid rgba(61, 212, 198, 0.2);
+        }
+
+        .admin-icon i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
+            color-scheme: dark;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(61, 212, 198, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+            filter: brightness(1.1);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        #loginError {
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            margin-top: 30px;
+            display: block;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="admin-icon">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <h2>Admin Portal</h2>
+        <p class="subtitle">Enter your credentials to manage the platform</p>
+
+        <form id="adminLoginForm">
+            <div class="input-group">
+                <label>Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="admin@destination.com" required>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span>Access Dashboard</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div id="loginError"></div>
+
+        <a href="/login" class="back-link"><i class="fas fa-arrow-left"></i> Back to User Portal</a>
+    </div>
+
+    <script>
+        const form = document.getElementById('adminLoginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const spinner = document.getElementById('spinner');
+        const errorEl = document.getElementById('loginError');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            setLoading(true);
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('role', 'ADMIN');
+                    window.location.href = '/admin';
+                } else {
+                    showError(data.detail || 'Login failed. Invalid admin credentials.');
+                }
+            } catch (err) {
+                showError('Connection error. Is the server running?');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        function setLoading(isLoading) {
+            const span = loginBtn.querySelector('span');
+            if (isLoading) {
+                span.style.display = 'none';
+                spinner.style.display = 'block';
+                loginBtn.disabled = true;
+            } else {
+                span.style.display = 'block';
+                spinner.style.display = 'none';
+                loginBtn.disabled = false;
+            }
+        }
+
+        function showError(msg) {
+            errorEl.innerText = msg;
+            errorEl.style.display = 'block';
+        }
+
+        // Redirect if already logged in as admin
+        if (localStorage.getItem('token') && localStorage.getItem('role') === 'ADMIN') {
+            window.location.href = '/admin';
+        }
+
+        // Show session expired message if redirected
+        const reason = new URLSearchParams(window.location.search).get('reason');
+        if (reason === 'expired') {
+            const err = document.getElementById('loginError');
+            err.innerText = 'Your session has expired. Please log in again.';
+            err.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

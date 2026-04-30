@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from app.database import Base
 
 class User(Base):
@@ -9,3 +9,4 @@ class User(Base):
     email = Column(String(100), unique=True)
     password = Column(String(200))
     role = Column(String(20), default="USER")  
+    is_blocked = Column(Boolean, default=False)

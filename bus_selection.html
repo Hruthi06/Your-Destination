@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Your Bus | Your Destination</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/dist/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b151e;
+            --primary: #3DD4C6;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background Decoration */
+        .bg-glow {
+            position: fixed;
+            top: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, rgba(61, 212, 198, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 60px auto;
+            flex: 1;
+        }
+
+        .header {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; }
+        .header p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .bus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .bus-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .bus-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            background: rgba(61, 212, 198, 0.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .bus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .bus-id {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .bus-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .bus-icon img { width: 80%; height: auto; }
+
+        .bus-num { font-size: 1.4rem; font-weight: 700; }
+        .bus-type { font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pulse { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .bus-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 20px 0;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .detail-item { display: flex; flex-direction: column; gap: 4px; }
+        .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .detail-value { font-size: 1rem; font-weight: 600; }
+
+        .amenities {
+            display: flex;
+            gap: 15px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+        .amenity-item.active { color: var(--primary); }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rating {
+            color: #f59e0b;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .track-btn {
+            background: var(--primary);
+            color: #0b151e;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .track-btn:hover { transform: scale(1.05); }
+
+        .loading-state {
+            text-align: center;
+            padding: 100px;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-back:hover { color: var(--primary); transform: translateX(-5px); }
+
+        @media (max-width: 768px) {
+            .bus-grid { grid-template-columns: 1fr; }
+            .btn-back { top: 20px; left: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<a href="user.html" class="btn-back">
+    <i class="fas fa-arrow-left"></i>
+    BACK TO DASHBOARD
+</a>
+
+<div class="container">
+    <div class="header">
+        <h1 id="routeName">Loading Route...</h1>
+        <p>Multiple buses are currently active. Select one to track live.</p>
+    </div>
+
+    <div id="busContainer" class="bus-grid">
+        <div class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i> Fetching active buses...
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const routeId = params.get('route');
+    let routeStops = [];
+
+    window.onload = async () => {
+        if (!routeId) { window.location.href = 'user.html'; return; }
+        
+        // Fetch Route Details
+        try {
+            const res = await fetch(`/api/routes/${routeId}`);
+            const route = await res.json();
+            document.getElementById('routeName').textContent = route.name;
+
+            const stopsRes = await fetch(`/api/routes/${routeId}/stops`);
+            routeStops = await stopsRes.json();
+            if (routeStops.stops) routeStops = routeStops.stops;
+        } catch(e) { console.error(e); }
+
+        fetchBuses();
+        setInterval(fetchBuses, 5000);
+    };
+
+    async function fetchBuses() {
+        try {
+            const res = await fetch('/api/buses/');
+            const allBuses = await res.json();
+            const activeBuses = allBuses.filter(b => b.route_id == routeId && b.status === 'RUNNING');
+            
+            if (activeBuses.length === 0) {
+                document.getElementById('busContainer').innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
+                        <i class="fas fa-clock" style="font-size: 3rem; color: var(--glass-border); margin-bottom: 20px;"></i>
+                        <h2>No live buses at the moment</h2>
+                        <p style="color: var(--text-muted); margin-top: 10px;">Please check back in a few minutes.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Fetch locations for all active buses
+            const busData = await Promise.all(activeBuses.map(async b => {
+                try {
+                    const locRes = await fetch(`/api/location/${b.id}`);
+                    const loc = await locRes.json();
+                    
+                    // Find next stop
+                    let nextStop = "End of Route";
+                    if (routeStops.length > 0) {
+                        let minDist = Infinity;
+                        let closestIdx = 0;
+                        routeStops.forEach((s, idx) => {
+                            const d = Math.sqrt((loc.latitude - s.latitude)**2 + (loc.longitude - s.longitude)**2);
+                            if (d < minDist) { minDist = d; closestIdx = idx; }
+                        });
+                        // Assume next stop is closestIdx + 1 (simplified)
+                        if (closestIdx + 1 < routeStops.length) {
+                            nextStop = routeStops[closestIdx + 1].name;
+                        } else {
+                            nextStop = routeStops[closestIdx].name;
+                        }
+                    }
+                    return { ...b, nextStop };
+                } catch(e) { return { ...b, nextStop: "Calculating..." }; }
+            }));
+
+            renderBuses(busData);
+        } catch(e) { console.error(e); }
+    }
+
+    function renderBuses(buses) {
+        const container = document.getElementById('busContainer');
+        container.innerHTML = buses.map((b, i) => {
+            const occupancy = Math.floor(Math.random() * 20) + 15;
+            const capacity = b.capacity || 50;
+            const rating = (4 + Math.random()).toFixed(1);
+            const type = i % 2 === 0 ? "AC Sleeper" : "Express Non-AC";
+            
+            return `
+                <div class="bus-card" onclick="trackBus(${b.id})">
+                    <div class="bus-header">
+                        <div class="bus-id">
+                            <div class="bus-icon">
+                                <img src="assets/img/logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3448/3448339.png'">
+                            </div>
+                            <div>
+                                <div class="bus-num">${b.bus_number}</div>
+                                <div class="bus-type">${type}</div>
+                            </div>
+                        </div>
+                        <div class="status-badge">
+                            <div class="pulse"></div> LIVE
+                        </div>
+                    </div>
+
+                    <div class="bus-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Driver</span>
+                            <span class="detail-value">${b.driver_name}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Occupancy</span>
+                            <span class="detail-value">${occupancy}/${capacity}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Next Stop</span>
+                            <span class="detail-value" style="color: var(--primary)">${b.nextStop}</span>
+                        </div>
+                    </div>
+
+                    <div class="footer-info">
+                        <div class="amenities">
+                            <i class="fas fa-wifi amenity-item active" title="WiFi Available"></i>
+                            <i class="fas fa-plug amenity-item active" title="USB Charging"></i>
+                            <i class="fas fa-snowflake amenity-item ${type.includes('AC') ? 'active' : ''}" title="Air Conditioning"></i>
+                        </div>
+                        <div class="rating">
+                            <i class="fas fa-star"></i>
+                            <span>${rating}</span>
+                        </div>
+                        <div class="track-btn">SELECT BUS</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function trackBus(busId) {
+        window.location.href = `map.html?route=${routeId}&bus=${busId}`;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Your Destination</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0F1720;
+            --grad-start: #092027;
+            --grad-end: #07202A;
+            --primary: #3DD4C6;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, var(--grad-start), var(--grad-end));
+            background-attachment: fixed;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+            background: rgba(15, 23, 32, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 35px;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 25px; }
+        .logo-box {
+            width: 60px; height: 60px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 15px; display: flex; justify-content: center; align-items: center;
+        }
+        .logo-box i { font-size: 1.8rem; color: var(--primary); }
+
+        .search-bar {
+            width: 350px; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 25px; padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .search-bar input { border: none; outline: none; background: transparent; width: 100%; color: white; }
+        .search-bar i { color: var(--primary); }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15); color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3); padding: 10px 20px;
+            border-radius: 12px; font-weight: 600; cursor: pointer;
+        }
+
+        /* Grid Actions */
+        .grid-section { display: flex; gap: 20px; margin-bottom: 40px; }
+        .grid-card {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; cursor: pointer;
+        }
+        .grid-card i { color: var(--primary); font-size: 1.2rem; }
+
+        /* Routes List - Reverting to List Style */
+        .section-title { font-size: 1.5rem; margin-bottom: 20px; font-weight: 700; display: flex; justify-content: space-between; }
+        .routes-list { display: flex; flex-direction: column; gap: 20px; }
+
+        .route-card {
+            background: #f8f9ff;
+            border-radius: 25px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            color: #1e293b;
+        }
+
+        .route-card:hover { transform: translateY(-5px); }
+
+        .route-badge {
+            width: 65px; height: 65px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-weight: 700; font-size: 1.3rem; flex-shrink: 0;
+            background: var(--primary);
+        }
+
+        .route-info { flex: 1; }
+        .route-title { font-weight: 600; color: #334155; font-size: 1.2rem; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
+        .route-dest { font-weight: 700; font-size: 1.3rem; color: #0f172a; margin-bottom: 4px; }
+        
+        .live-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.8rem; font-weight: 700; color: #10b981;
+            background: rgba(16, 185, 129, 0.1); padding: 4px 10px; border-radius: 20px;
+        }
+        .pulse { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .no-live { color: #ef4444; font-size: 0.8rem; font-weight: 600; margin-top: 5px; }
+
+        .track-btn {
+            background: white; border: none; padding: 15px 30px;
+            border-radius: 30px; font-weight: 700; color: #334155;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-box"><i class="fas fa-bus-alt"></i></div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search routes...">
+            </div>
+        </div>
+        <div class="top-nav">
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="grid-section">
+        <div class="grid-card" onclick="document.getElementById('fav-section').scrollIntoView()">
+            <i class="fas fa-star"></i> Favorites
+        </div>
+        <div class="grid-card" onclick="fetchRoutes()">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </div>
+    </div>
+
+    <div id="fav-section" style="display: none; margin-bottom: 40px;">
+        <h2 class="section-title">Your Favorites</h2>
+        <div class="routes-list" id="favorites-container"></div>
+    </div>
+
+    <h2 class="section-title">Active Routes <span id="currentDate" style="font-size: 0.9rem; font-weight: 400; opacity: 0.7;"></span></h2>
+    <div class="routes-list" id="routes-container">
+        <div style="text-align: center; color: var(--primary); padding: 40px;">Loading...</div>
+    </div>
+</div>
+
+<script>
+    let allRoutes = [];
+    let allBuses = [];
+    let userFavorites = [];
+
+    document.getElementById('currentDate').innerText = new Date().toLocaleDateString();
+
+    function handleLogout() { localStorage.clear(); window.location.href = '/login?logout=true'; }
+
+    window.onload = async () => {
+        if (!localStorage.getItem('token')) { window.location.href = '/'; return; }
+        await refreshData();
+        setInterval(refreshData, 3000);
+        
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            renderRoutes(allRoutes.filter(r => r.name.toLowerCase().includes(term) || r.source.toLowerCase().includes(term) || r.destination.toLowerCase().includes(term)));
+        });
+    };
+
+    async function refreshData() {
+        try {
+            const [favRes, busRes, routeRes] = await Promise.all([
+                fetch("/api/user/favorites", { headers: { "Authorization": `Bearer ${localStorage.getItem('token')}` } }),
+                fetch("/api/buses/"),
+                fetch("/api/routes/")
+            ]);
+            userFavorites = await favRes.json();
+            allBuses = await busRes.json();
+            allRoutes = await routeRes.json();
+            renderRoutes(allRoutes);
+            document.getElementById('fav-section').style.display = userFavorites.length > 0 ? 'block' : 'none';
+        } catch (e) { console.error(e); }
+    }
+
+    async function toggleFavorite(routeId, e) {
+        e.stopPropagation();
+        const isFav = userFavorites.some(f => f.route_id === routeId);
+        await fetch(isFav ? `/api/user/favorites/${routeId}` : "/api/user/favorites", {
+            method: isFav ? 'DELETE' : 'POST',
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem('token')}` },
+            body: isFav ? null : JSON.stringify({ route_id: routeId })
+        });
+        await refreshData();
+    }
+
+    function renderRoutes(routes) {
+        const favIds = userFavorites.map(f => f.route_id);
+        const colors = ['#0ea5e9', '#f59e0b', '#10b981', '#6366f1', '#ec4899'];
+        
+        let html = '', favHtml = '';
+        routes.forEach((route, idx) => {
+            const isFav = favIds.includes(route.id);
+            const liveBuses = allBuses.filter(b => b.route_id == route.id && b.status === 'RUNNING');
+            let displayId = route.id;
+            let match = route.name.match(/\d+/);
+            if (match) displayId = match[0];
+
+            const card = `
+            <div class="route-card">
+                <div class="route-badge" style="background: ${colors[idx % 5]}">${displayId}</div>
+                <div class="route-info">
+                    <div class="route-title">
+                        ${route.source}
+                        <i class="${isFav ? 'fas' : 'far'} fa-star" onclick="toggleFavorite(${route.id}, event)" style="cursor: pointer; color: #fbbf24;"></i>
+                    </div>
+                    <div class="route-dest">${route.destination}</div>
+                    ${liveBuses.length > 0 
+                        ? `<div class="live-badge"><div class="pulse"></div> LIVE: ${liveBuses.length} Bus Running</div>` 
+                        : `<div class="no-live">No active buses</div>`}
+                </div>
+                <button class="track-btn" onclick="window.location.href='bus_selection.html?route=${route.id}'">Track</button>
+            </div>`;
+            html += card;
+            if (isFav) favHtml += card;
+        });
+        document.getElementById('routes-container').innerHTML = html || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No routes found.</div>';
+        document.getElementById('favorites-container').innerHTML = favHtml;
+    }
+</script>
+</body>
+</html>

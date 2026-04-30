@@ -30,3 +30,16 @@ def create_stop(
 @router.get("/")
 def get_stops(db: Session = Depends(get_db)):
     return db.query(Stop).all()
+
+@router.delete("/{stop_id}")
+def delete_stop(
+    stop_id: int, 
+    db: Session = Depends(get_db), 
+    admin=Depends(get_admin_user)
+):
+    stop = db.query(Stop).filter(Stop.id == stop_id).first()
+    if not stop:
+        raise HTTPException(status_code=404, detail="Stop not found")
+    db.delete(stop)
+    db.commit()
+    return {"message": "Stop deleted successfully"}

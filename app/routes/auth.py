@@ -15,14 +15,13 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already exists")
 
     new_user = User(
-    name=user.name,
-    email=user.email,
-    password=hash_password(user.password),
-    role="USER"   
-)
+        name=user.name,
+        email=user.email,
+        password=hash_password(user.password),
+        role="USER"   
+    )
     db.add(new_user)
     db.commit()
-
     return {"message": "User registered successfully"}
 
 @router.post("/login")
@@ -32,11 +31,18 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token = create_access_token({"sub": db_user.email})
+    if db_user.is_blocked:
+        raise HTTPException(status_code=403, detail="Your account has been blocked by an admin")
+
+    token = create_access_token({
+        "sub": db_user.email,
+        "role": db_user.role
+    })
 
     return {
         "access_token": token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "role": db_user.role
     }
 
 @router.post("/admin/login")
@@ -46,6 +52,9 @@ def admin_login(user: UserLogin, db: Session = Depends(get_db)):
     # ❌ Wrong email or password
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if db_user.is_blocked:
+        raise HTTPException(status_code=403, detail="Your account has been blocked")
 
     # ❌ Not an admin
     if db_user.role != "ADMIN":

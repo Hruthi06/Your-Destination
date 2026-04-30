@@ -24,7 +24,9 @@ def create_bus(
     new_bus = Bus(
         bus_number=bus.bus_number,
         driver_name=bus.driver_name,
-        capacity=bus.capacity
+        capacity=bus.capacity,
+        status=bus.status or "RUNNING",
+        route_id=bus.route_id
     )
 
     db.add(new_bus)
@@ -56,10 +58,17 @@ def update_bus(
     db_bus.bus_number = bus.bus_number
     db_bus.driver_name = bus.driver_name
     db_bus.capacity = bus.capacity
+    db_bus.status = bus.status or db_bus.status
+    db_bus.route_id = bus.route_id
 
     db.commit()
 
     return {"message": "Bus updated successfully"}
+
+@router.get("/route/{route_id}")
+def get_buses_by_route(route_id: int, db: Session = Depends(get_db)):
+    buses = db.query(Bus).filter(Bus.route_id == route_id).all()
+    return buses
 
 @router.delete("/{bus_id}")
 def delete_bus(
