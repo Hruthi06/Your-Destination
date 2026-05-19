@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# Environment Variables (Secret credentials)
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+simulation.log
+
+# Temporary Folders
+.temp_github_repo/
+.temp/
+
+# Large mockup images
+Gemini_Generated_Image_*.png
+
+# OS specific files
+.DS_Store
+Thumbs.db
