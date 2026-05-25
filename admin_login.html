@@ -8,19 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg-dark: #0F1720;
-            --primary: #3DD4C6;
-            --accent: #6366f1;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #080914;
+            --primary: #a855f7;
+            --accent: #06b6d4;
+            --glass-bg: rgba(25, 29, 49, 0.4);
+            --glass-border: rgba(168, 85, 247, 0.15);
             --text-main: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.6);
+            --text-muted: #94a3b8;
         }
 
         body {
             margin: 0;
             padding: 0;
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            background: linear-gradient(rgba(8, 9, 20, 0.65), rgba(8, 9, 20, 0.65)), url('/assets/img/bus_login_bg.png') no-repeat center center/cover;
             font-family: 'Outfit', sans-serif;
             height: 100vh;
             display: flex;
@@ -32,42 +32,46 @@
         .login-card {
             width: 100%;
             max-width: 450px;
-            background: rgba(15, 23, 32, 0.7);
+            background: #101323;
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
             padding: 50px 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.05);
             text-align: center;
         }
 
         .admin-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(61, 212, 198, 0.1);
-            border-radius: 20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(168, 85, 247, 0.15);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 30px;
-            border: 1px solid rgba(61, 212, 198, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
         }
 
         .admin-icon i {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             color: var(--primary);
         }
 
         h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
             letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p.subtitle {
             color: var(--text-muted);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             font-size: 1rem;
         }
 
@@ -99,8 +103,8 @@
         input {
             width: 100%;
             padding: 14px 15px 14px 45px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
+            background: #15182e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             color: white;
             font-family: 'Outfit', sans-serif;
@@ -113,15 +117,15 @@
         input:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 4px rgba(61, 212, 198, 0.1);
+            background: #1a1d3a;
+            box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2);
         }
 
         .btn-login {
             width: 100%;
             padding: 16px;
-            background: var(--primary);
-            color: #000;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: #ffffff;
             border: none;
             border-radius: 12px;
             font-weight: 700;
@@ -133,11 +137,12 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px var(--primary);
+            box-shadow: 0 10px 25px -10px var(--primary);
             filter: brightness(1.1);
         }
 
@@ -160,9 +165,9 @@
             display: none;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(0,0,0,0.1);
+            border: 3px solid rgba(255,255,255,0.2);
             border-radius: 50%;
-            border-top-color: #000;
+            border-top-color: #ffffff;
             animation: spin 1s linear infinite;
         }
 
@@ -171,16 +176,31 @@
         }
 
         .back-link {
-            margin-top: 30px;
-            display: block;
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
+            display: none;
         }
 
-        .back-link:hover {
-            color: var(--primary);
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.15);
+            color: white;
         }
     </style>
 </head>
@@ -188,10 +208,10 @@
 
     <div class="login-card">
         <div class="admin-icon">
-            <i class="fas fa-user-shield"></i>
+            <i class="fas fa-bus"></i>
         </div>
-        <h2>Admin Portal</h2>
-        <p class="subtitle">Enter your credentials to manage the platform</p>
+        <h2>BusTrack</h2>
+        <p class="subtitle">Sign in to continue</p>
 
         <form id="adminLoginForm">
             <div class="input-group">
@@ -210,14 +230,16 @@
             </div>
 
             <button type="submit" class="btn-login" id="loginBtn">
-                <span>Access Dashboard</span>
+                <span>Sign In as Admin</span>
                 <div class="spinner" id="spinner"></div>
             </button>
         </form>
 
         <div id="loginError"></div>
 
-        <a href="/login" class="back-link"><i class="fas fa-arrow-left"></i> Back to User Portal</a>
+        <button type="button" class="btn-secondary" onclick="window.location.href='/login'">
+            <span>Try standard login</span>
+        </button>
     </div>
 
     <script>

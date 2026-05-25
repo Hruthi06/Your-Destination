@@ -37,7 +37,7 @@ def update_location(
 def get_location(bus_id: int, db: Session = Depends(get_db)):
     location = db.query(Location)\
         .filter(Location.bus_id == bus_id)\
-        .order_by(Location.timestamp.desc())\
+        .order_by(Location.id.desc())\
         .first()
 
     if not location:

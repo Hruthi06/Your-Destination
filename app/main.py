@@ -26,9 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not os.path.exists("assets"):
-    os.makedirs("assets")
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+if not os.path.exists("app/assets"):
+    os.makedirs("app/assets")
+app.mount("/assets", StaticFiles(directory="app/assets"), name="assets")
 
 Base.metadata.create_all(bind=engine)
 
@@ -86,6 +86,7 @@ def create_admin():
 # ✅ Simulation Logic
 waiting_buses = {} # bus_id -> wait_until_timestamp
 bus_directions = {} # bus_id -> 1 (forward), -1 (backward)
+bus_targets = {} # bus_id -> target_stop_index
 
 def simulate_buses():
     print("🚀 Bus simulation engine starting...")
@@ -110,68 +111,76 @@ def simulate_buses():
                 if not stops: continue
                 
                 num_stops = len(stops)
-                loc = db.query(LocationModel).filter(LocationModel.bus_id == bus.id).order_by(LocationModel.timestamp.desc()).first()
+                loc = db.query(LocationModel).filter(LocationModel.bus_id == bus.id).order_by(LocationModel.id.desc()).first()
                 if not loc:
                     db.add(LocationModel(bus_id=bus.id, latitude=stops[0].latitude, longitude=stops[0].longitude))
                     db.commit()
                     continue
 
-                # Find which stop we are currently at or closest to
-                dists = [math.sqrt((loc.latitude - s.latitude)**2 + (loc.longitude - s.longitude)**2) for s in stops]
-                closest_idx = dists.index(min(dists))
+                # Initialize target if not set
+                if bus.id not in bus_targets or bus_targets[bus.id] >= num_stops:
+                    dists = [math.sqrt((loc.latitude - s.latitude)**2 + (loc.longitude - s.longitude)**2) for s in stops]
+                    closest_idx = dists.index(min(dists))
+                    direction = bus_directions[bus.id]
+                    target_idx = closest_idx + direction
+                    if target_idx >= num_stops:
+                        target_idx = num_stops - 1
+                        bus_directions[bus.id] = -1
+                    elif target_idx < 0:
+                        target_idx = 0
+                        bus_directions[bus.id] = 1
+                    bus_targets[bus.id] = target_idx
+
+                target_idx = bus_targets[bus.id]
+                target_stop = stops[target_idx]
+
+                # Distance to target stop
+                dist_to_target = math.sqrt((loc.latitude - target_stop.latitude)**2 + (loc.longitude - target_stop.longitude)**2)
                 
                 # Check if we have REACHED the current target stop
-                if dists[closest_idx] < 0.0003:
-                    # We are at a stop! 
-                    # 1. Snap to it
-                    loc.latitude = stops[closest_idx].latitude
-                    loc.longitude = stops[closest_idx].longitude
+                if dist_to_target < 0.0003:
+                    # We are at the stop! snap to it
+                    loc.latitude = target_stop.latitude
+                    loc.longitude = target_stop.longitude
                     db.commit()
                     
-                    # 2. Check if we need to reverse direction (Continuous movement, no waiting)
-                    if closest_idx == num_stops - 1:
-                        bus_directions[bus.id] = -1 # Reverse to backward
-                    elif closest_idx == 0:
-                        bus_directions[bus.id] = 1 # Reverse to forward
+                    # Determine next direction
+                    if target_idx == num_stops - 1:
+                        bus_directions[bus.id] = -1
+                    elif target_idx == 0:
+                        bus_directions[bus.id] = 1
                     
-                    # NO WAIT TIME - Continue moving instantly
-                    # waiting_buses[bus.id] = now + 30 
+                    # Set next target stop index
+                    direction = bus_directions[bus.id]
+                    next_target_idx = target_idx + direction
+                    if next_target_idx >= num_stops: next_target_idx = num_stops - 1
+                    if next_target_idx < 0: next_target_idx = 0
+                    bus_targets[bus.id] = next_target_idx
                     
+                    # Wait 6 seconds (2 ticks) at the stop
+                    waiting_buses[bus.id] = now + 6
                     continue
 
-                # Movement Logic: Determine next target based on direction
-                direction = bus_directions[bus.id]
-                
-                # If moving forward, target is closest_idx + 1 (if we haven't reached closest_idx yet)
-                # But actually, if we are NOT at a stop, we are BETWEEN stops.
-                # Let's find the logical "next" stop based on our last known stop.
-                
-                # Simplified: move toward the stop that follows our direction
-                target_idx = closest_idx + direction
-                
-                # Clamp target_idx
-                if target_idx >= num_stops: target_idx = num_stops - 1
-                if target_idx < 0: target_idx = 0
-                
-                target_stop = stops[target_idx]
-                prev_stop = stops[closest_idx]
-                
-                # Calculate step to finish in 30s (10 ticks) with slight variation
+                # Movement Logic: step towards target stop
+                # Calculate step to finish leg with slight variation
                 import random
+                prev_stop_idx = target_idx - bus_directions[bus.id]
+                if prev_stop_idx < 0: prev_stop_idx = 0
+                if prev_stop_idx >= num_stops: prev_stop_idx = num_stops - 1
+                prev_stop = stops[prev_stop_idx]
+
                 total_leg_dist = math.sqrt((target_stop.latitude - prev_stop.latitude)**2 + (target_stop.longitude - prev_stop.longitude)**2)
-                speed_factor = random.uniform(0.8, 1.2) # Randomize speed by +/- 20%
+                speed_factor = random.uniform(0.8, 1.2) # +/- 20%
                 step = (total_leg_dist / 10.0) * speed_factor
-                
-                # If the leg distance is 0 (same stop), just move to next
-                if step == 0: step = 0.0005 
+                if step == 0: step = 0.0005
 
                 angle = math.atan2(target_stop.latitude - loc.latitude, target_stop.longitude - loc.longitude)
                 new_lat = loc.latitude + math.sin(angle) * step
                 new_lng = loc.longitude + math.cos(angle) * step
                 
-                # Prevent overshooting
-                dist_to_target = math.sqrt((target_stop.latitude - new_lat)**2 + (target_stop.longitude - new_lng)**2)
-                if dist_to_target < step:
+                # Prevent overshooting target
+                dist_to_target_after_step = math.sqrt((target_stop.latitude - new_lat)**2 + (target_stop.longitude - new_lng)**2)
+                if dist_to_target_after_step < step:
                     new_lat = target_stop.latitude
                     new_lng = target_stop.longitude
 

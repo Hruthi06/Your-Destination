@@ -5,37 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Your Bus | Your Destination</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/dist/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0b151e;
-            --primary: #3DD4C6;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --bg-dark: #080914;
+            --primary: #a855f7;
+            --primary-glow: rgba(168, 85, 247, 0.35);
+            --accent: #06b6d4;
+            --accent-glow: rgba(6, 182, 212, 0.35);
+            --card-bg: rgba(16, 21, 30, 0.8);
+            --glass-border: rgba(168, 85, 247, 0.12);
             --text-main: #ffffff;
-            --text-muted: rgba(255, 255, 255, 0.6);
+            --text-muted: #94a3b8;
+            --green-active: #10b981;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             background: var(--bg-dark); 
             color: var(--text-main); 
-            font-family: 'Outfit', sans-serif; 
+            font-family: 'Inter', sans-serif; 
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
         }
 
-        /* Background Decoration */
-        .bg-glow {
-            position: fixed;
-            top: -10%;
-            right: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(61, 212, 198, 0.05) 0%, transparent 70%);
-            z-index: -1;
+        h1, h2, h3, h4, .bus-num, .track-btn, .btn-back {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Sleek custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080914;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #252949;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3c4276;
         }
 
         .container {
@@ -49,7 +65,14 @@
             margin-bottom: 50px;
             text-align: center;
         }
-        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 10px; }
+        .header h1 { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .header p { color: var(--text-muted); font-size: 1.1rem; }
 
         .bus-grid {
@@ -60,7 +83,7 @@
         }
 
         .bus-card {
-            background: var(--glass-bg);
+            background: var(--card-bg);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
             padding: 30px;
@@ -68,17 +91,31 @@
             flex-direction: column;
             gap: 20px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .bus-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0;
+            width: 4px;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
         }
 
         .bus-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary);
-            background: rgba(61, 212, 198, 0.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: translateY(-6px);
+            border-color: rgba(168, 85, 247, 0.25);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px var(--primary-glow);
+        }
+
+        .bus-card:hover::before {
+            opacity: 1;
         }
 
         .bus-header {
@@ -95,22 +132,24 @@
         .bus-icon {
             width: 60px;
             height: 60px;
-            background: var(--glass-bg);
+            background: rgba(168, 85, 247, 0.1);
             border: 1px solid var(--glass-border);
             border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            box-shadow: 0 0 10px var(--primary-glow);
         }
-        .bus-icon img { width: 80%; height: auto; }
+        .bus-icon img { width: 80%; height: auto; filter: drop-shadow(0 0 2px var(--primary)); }
 
-        .bus-num { font-size: 1.4rem; font-weight: 700; }
-        .bus-type { font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .bus-num { font-size: 1.4rem; font-weight: 700; color: white; }
+        .bus-type { font-size: 0.8rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
         .status-badge {
             background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--green-active);
             padding: 6px 12px;
             border-radius: 10px;
             font-size: 0.8rem;
@@ -119,9 +158,15 @@
             align-items: center;
             gap: 6px;
         }
-        .pulse { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+        .pulse { 
+            width: 8px; 
+            height: 8px; 
+            background: var(--green-active); 
+            border-radius: 50%; 
+            animation: pulse-animation 2s infinite; 
+        }
 
-        @keyframes pulse {
+        @keyframes pulse-animation {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
@@ -138,7 +183,7 @@
 
         .detail-item { display: flex; flex-direction: column; gap: 4px; }
         .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .detail-value { font-size: 1rem; font-weight: 600; }
+        .detail-value { font-size: 1rem; font-weight: 600; color: white; }
 
         .amenities {
             display: flex;
@@ -146,15 +191,16 @@
             font-size: 1.1rem;
             color: var(--text-muted);
         }
-        .amenity-item.active { color: var(--primary); }
+        .amenity-item.active { color: var(--accent); }
 
         .footer-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
         }
         .rating {
-            color: #f59e0b;
+            color: #fbbf24;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -162,15 +208,20 @@
         }
 
         .track-btn {
-            background: var(--primary);
-            color: #0b151e;
+            background: linear-gradient(135deg, #8b5cf6, var(--primary));
+            color: white;
             padding: 12px 25px;
             border-radius: 12px;
             font-weight: 700;
             text-decoration: none;
-            transition: 0.2s;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
         }
-        .track-btn:hover { transform: scale(1.05); }
+        .track-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.55);
+            filter: brightness(1.15);
+        }
 
         .loading-state {
             text-align: center;
@@ -183,19 +234,27 @@
             position: absolute;
             top: 40px;
             left: 40px;
-            color: var(--text-main);
+            color: var(--text-muted);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 10px;
             font-weight: 600;
-            transition: 0.2s;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 12px;
         }
-        .btn-back:hover { color: var(--primary); transform: translateX(-5px); }
+        .btn-back:hover { 
+            color: white; 
+            border-color: var(--primary);
+            background: rgba(168, 85, 247, 0.1);
+        }
 
         @media (max-width: 768px) {
             .bus-grid { grid-template-columns: 1fr; }
-            .btn-back { top: 20px; left: 20px; }
+            .btn-back { position: relative; top: 0; left: 0; margin-bottom: 30px; display: inline-flex; }
         }
     </style>
 </head>
@@ -246,7 +305,7 @@
 
     async function fetchBuses() {
         try {
-            const res = await fetch('/api/buses/');
+            const res = await fetch(`/api/buses/?t=${Date.now()}`);
             const allBuses = await res.json();
             const activeBuses = allBuses.filter(b => b.route_id == routeId && b.status === 'RUNNING');
             
@@ -264,7 +323,7 @@
             // Fetch locations for all active buses
             const busData = await Promise.all(activeBuses.map(async b => {
                 try {
-                    const locRes = await fetch(`/api/location/${b.id}`);
+                    const locRes = await fetch(`/api/location/${b.id}?t=${Date.now()}`);
                     const loc = await locRes.json();
                     
                     // Find next stop
