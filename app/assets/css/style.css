@@ -3,16 +3,26 @@
 :root {
     /* Colors */
     --primary: #6366f1;
+    /* MAIN gradient starting color for buttons (e.g. Login, Track) */
     --primary-hover: #4f46e5;
+    /* Color when hovering over primary links */
     --secondary: #a855f7;
+    /* ENDING color for the gradient buttons */
     --accent: #22d3ee;
+    /* Color for the blinking "LIVE" dot and small highlights */
     --bg-dark: #0f172a;
+    /* MAIN background color behind the map and entire app */
     --bg-card: rgba(30, 41, 59, 0.7);
+    /* Background color of the glass panels (0.7 is the transparency) */
     --text-main: #f8fafc;
+    /* MAIN text color (Headings, bold text) */
     --text-muted: #94a3b8;
+    /* SUBTEXT color (Small labels, descriptions) */
     --glass: rgba(255, 255, 255, 0.05);
+    /* Subtle white tint for some glass elements */
     --glass-border: rgba(255, 255, 255, 0.1);
-    
+    /* Border line color around the glass panels */
+
     /* Effects */
     --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     --blur: blur(12px);
@@ -32,7 +42,10 @@ body {
     overflow: hidden;
 }
 
-h1, h2, h3, .brand {
+h1,
+h2,
+h3,
+.brand {
     font-family: 'Outfit', sans-serif;
 }
 
@@ -128,22 +141,36 @@ h1, h2, h3, .brand {
 }
 
 @keyframes pulse {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.4;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
 }
+
 ::-webkit-scrollbar-track {
     background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
     background: var(--glass-border);
     border-radius: 10px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }

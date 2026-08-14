@@ -145,9 +145,17 @@ def seed():
     db.execute(text("DELETE FROM stops"))
     db.execute(text("DELETE FROM buses"))
     db.execute(text("DELETE FROM routes"))
+    
+    # Reset auto_increment counters
+    db.execute(text("ALTER TABLE favorites AUTO_INCREMENT = 1"))
+    db.execute(text("ALTER TABLE locations AUTO_INCREMENT = 1"))
+    db.execute(text("ALTER TABLE stops AUTO_INCREMENT = 1"))
+    db.execute(text("ALTER TABLE buses AUTO_INCREMENT = 1"))
+    db.execute(text("ALTER TABLE routes AUTO_INCREMENT = 1"))
+    
     db.execute(text("SET FOREIGN_KEY_CHECKS=1"))
     db.commit()
-    print("Cleared.")
+    print("Cleared and auto-increment counters reset to 1.")
 
     for route_data in ROUTES:
         print(f"\nSeeding: {route_data['name']}")
@@ -226,13 +234,13 @@ def seed():
         db.commit()
         print(f"  Added 10 buses with initial locations (staggered across {total_stops} stops)")
 
-    print("\n✅ All Tumkur city bus routes seeded successfully!")
+    print("\n[SUCCESS] All Tumkur city bus routes seeded successfully!")
     total_routes = db.execute(text("SELECT COUNT(*) FROM routes")).scalar()
     total_buses  = db.execute(text("SELECT COUNT(*) FROM buses")).scalar()
     total_stops  = db.execute(text("SELECT COUNT(*) FROM stops")).scalar()
-    print(f"  📍 Routes: {total_routes}")
-    print(f"  🚌 Buses:  {total_buses} ({total_buses // total_routes} per route)")
-    print(f"  🏁 Stops:  {total_stops}")
+    print(f"  Routes: {total_routes}")
+    print(f"  Buses:  {total_buses} ({total_buses // total_routes} per route)")
+    print(f"  Stops:  {total_stops}")
     db.close()
 
 if __name__ == "__main__":

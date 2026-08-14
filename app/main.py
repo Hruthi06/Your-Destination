@@ -84,7 +84,10 @@ def create_admin():
     db.close()
 
 # ✅ Simulation Logic
-waiting_buses = {} # bus_id -> wait_until_timestamp
+STATION_DWELL_DELAY_MS = 6000
+SIMULATION_TICK_MS = 3000
+
+waiting_buses = {} # bus_id -> wait_until_timestamp (in milliseconds)
 bus_directions = {} # bus_id -> 1 (forward), -1 (backward)
 bus_targets = {} # bus_id -> target_stop_index
 
@@ -93,7 +96,7 @@ def simulate_buses():
     while True:
         db = SessionLocal()
         try:
-            now = time.time()
+            now = time.time() * 1000 # Convert to milliseconds
             buses = db.query(bus_model.Bus).filter(bus_model.Bus.status == "RUNNING").all()
             for bus in buses:
                 if not bus.route_id: continue
@@ -157,8 +160,8 @@ def simulate_buses():
                     if next_target_idx < 0: next_target_idx = 0
                     bus_targets[bus.id] = next_target_idx
                     
-                    # Wait 6 seconds (2 ticks) at the stop
-                    waiting_buses[bus.id] = now + 6
+                    # Wait at the stop
+                    waiting_buses[bus.id] = now + STATION_DWELL_DELAY_MS
                     continue
 
                 # Movement Logic: step towards target stop
@@ -191,7 +194,7 @@ def simulate_buses():
             print(f"Simulation Error: {e}")
         finally:
             db.close()
-        time.sleep(3)
+        time.sleep(SIMULATION_TICK_MS / 1000.0)
 
 @app.on_event("startup")
 def startup():

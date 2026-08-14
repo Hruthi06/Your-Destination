@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BusTrack - Live Tracking Dashboard</title>
-    
+
     <!-- External Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Leaflet.js Map Assets -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         :root {
-            --bg-dark: #080914;
-            --primary: #a855f7;
-            --primary-glow: rgba(168, 85, 247, 0.35);
-            --accent: #06b6d4;
-            --accent-glow: rgba(6, 182, 212, 0.35);
-            --card-bg: rgba(16, 21, 30, 0.8);
-            --glass-border: rgba(168, 85, 247, 0.12);
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --star-gold: #fbbf24;
-            --green-active: #10b981;
-            --orange-active: #f97316;
+            --bg-dark: #080914; /* Dark background color */
+            --primary: #a855f7; /* Primary purple color */
+            --primary-glow: rgba(168, 85, 247, 0.35); /* Primary glow effect */
+            --accent: #06b6d4; /* Accent cyan color */
+            --accent-glow: rgba(6, 182, 212, 0.35); /* Accent glow effect */
+            --card-bg: rgba(16, 21, 30, 0.8); /* Semi-transparent dark background for cards */
+            --glass-border: rgba(168, 85, 247, 0.12); /* Semi-transparent purple for glassmorphism borders */
+            --text-main: #ffffff; /* Main white text color */
+            --text-muted: #94a3b8; /* Muted gray text color */
+            --star-gold: #fbbf24; /* Golden color for star icons */
+            --green-active: #10b981; /* Green color for active/live status */
+            --orange-active: #f97316; /* Orange color for active items */
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -42,12 +45,17 @@
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
-                              radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+            background-image: radial-gradient(circle at 10% 20%, rgba(247, 85, 220, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
             background-attachment: fixed;
         }
 
-        h1, h2, h3, h4, .logo-text, .tab-btn {
+        h1,
+        h2,
+        h3,
+        h4,
+        .logo-text,
+        .tab-btn {
             font-family: 'Outfit', sans-serif;
         }
 
@@ -55,13 +63,16 @@
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #080914;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #252949;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #3c4276;
         }
@@ -83,7 +94,7 @@
             border-radius: 20px;
             padding: 15px 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .logo-section {
@@ -164,7 +175,7 @@
         .icon-btn {
             width: 40px;
             height: 40px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             border-radius: 50%;
             display: flex;
@@ -276,10 +287,12 @@
             border-color: rgba(251, 191, 36, 0.2);
             background: rgba(251, 191, 36, 0.03);
         }
+
         .pill-btn.favorites:hover {
             background: rgba(251, 191, 36, 0.1);
             border-color: var(--star-gold);
         }
+
         .pill-btn.favorites.active {
             background: rgba(251, 191, 36, 0.15);
             border-color: var(--star-gold);
@@ -291,6 +304,7 @@
             border-color: rgba(6, 182, 212, 0.2);
             background: rgba(6, 182, 212, 0.03);
         }
+
         .pill-btn.refresh:hover {
             background: rgba(6, 182, 212, 0.1);
             border-color: var(--accent);
@@ -305,6 +319,7 @@
             align-items: center;
             gap: 6px;
         }
+
         .pulse-dot {
             width: 8px;
             height: 8px;
@@ -314,9 +329,17 @@
         }
 
         @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
         }
 
         /* View Panels */
@@ -330,8 +353,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ─── TAB 1: ROUTES VIEW ─── */
@@ -373,7 +403,7 @@
             justify-content: space-between;
             transition: var(--transition);
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
             position: relative;
             overflow: hidden;
         }
@@ -381,7 +411,9 @@
         .route-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 4px;
             background: var(--primary);
             opacity: 0;
@@ -391,7 +423,7 @@
         .route-card:hover {
             transform: translateY(-4px);
             border-color: rgba(168, 85, 247, 0.25);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px var(--primary-glow);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px var(--primary-glow);
         }
 
         .route-card:hover::before {
@@ -486,7 +518,7 @@
         .progress-line-bg {
             flex: 1;
             height: 4px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 2px;
             position: relative;
             min-width: 180px;
@@ -494,7 +526,9 @@
 
         .progress-line-fill {
             position: absolute;
-            top: 0; left: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             border-radius: 2px;
         }
 
@@ -509,7 +543,8 @@
             gap: 20px;
         }
 
-        .card-bell, .card-star {
+        .card-bell,
+        .card-star {
             font-size: 1.15rem;
             cursor: pointer;
             transition: var(--transition);
@@ -518,6 +553,7 @@
         .card-bell {
             color: var(--text-muted);
         }
+
         .card-bell:hover {
             color: var(--accent);
         }
@@ -525,9 +561,11 @@
         .card-star {
             color: var(--text-muted);
         }
+
         .card-star:hover {
             color: var(--star-gold);
         }
+
         .card-star.active {
             color: var(--star-gold);
         }
@@ -564,7 +602,7 @@
         }
 
         .map-filter-pill {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             padding: 6px 16px;
             border-radius: 20px;
@@ -578,7 +616,8 @@
             gap: 6px;
         }
 
-        .map-filter-pill:hover, .map-filter-pill.active {
+        .map-filter-pill:hover,
+        .map-filter-pill.active {
             background: var(--card-bg);
             color: white;
             border-color: var(--primary);
@@ -599,7 +638,7 @@
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
             border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             position: relative;
         }
@@ -616,29 +655,35 @@
             border-radius: 8px !important;
             overflow: hidden;
         }
+
         .leaflet-bar a {
             background-color: #101323 !important;
             color: white !important;
             border-bottom: 1px solid var(--glass-border) !important;
         }
+
         .leaflet-bar a:hover {
             background-color: #1c213c !important;
         }
+
         .leaflet-popup-content-wrapper {
             background: #101323 !important;
             color: white !important;
             border: 1px solid var(--glass-border);
             border-radius: 12px !important;
         }
+
         .leaflet-popup-tip {
             background: #101323 !important;
         }
+
         .leaflet-popup-content h4 {
             font-size: 0.95rem;
             font-weight: 700;
             margin-bottom: 4px;
             color: var(--primary);
         }
+
         .leaflet-popup-content p {
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -653,7 +698,7 @@
             border-radius: 24px;
             padding: 80px 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -664,7 +709,7 @@
         .history-icon-circle {
             width: 70px;
             height: 70px;
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             border-radius: 50%;
             display: flex;
@@ -692,25 +737,31 @@
                 gap: 15px;
                 padding: 20px;
             }
+
             .search-container {
                 margin: 0;
                 width: 100%;
             }
+
             .control-row {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .tabs-container {
                 flex-direction: column;
             }
+
             .route-card {
                 flex-direction: column;
                 gap: 20px;
                 align-items: stretch;
             }
+
             .card-actions-right {
                 justify-content: space-between;
             }
+
             .btn-track {
                 width: 100%;
                 justify-content: center;
@@ -718,260 +769,261 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <!-- Header Navigation -->
-    <nav class="navbar">
-        <div class="logo-section" onclick="switchTab('routes')">
-            <div class="logo-box">
-                <i class="fas fa-bus"></i>
+    <div class="container">
+        <!-- Header Navigation -->
+        <nav class="navbar">
+            <div class="logo-section" onclick="switchTab('routes')">
+                <div class="logo-box">
+                    <i class="fas fa-bus"></i>
+                </div>
+                <div class="logo-text">BusTrack</div>
             </div>
-            <div class="logo-text">BusTrack</div>
-        </div>
-        
-        <div class="search-container">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="Search routes, stops...">
-        </div>
-        
-        <div class="nav-actions">
-            <div class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></div>
-            <div class="icon-btn" title="Toggle Theme"><i class="fas fa-sun"></i></div>
-            <div class="icon-btn" title="Settings"><i class="fas fa-cog"></i></div>
-            <button class="btn-logout" onclick="handleLogout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-    </nav>
 
-    <!-- Controls Row -->
-    <div class="control-row">
-        <!-- Tab Switches -->
-        <div class="tabs-container">
-            <button class="tab-btn active" id="tab-btn-routes" onclick="switchTab('routes')">
-                <i class="fas fa-route"></i> Routes
-            </button>
-            <button class="tab-btn" id="tab-btn-map" onclick="switchTab('map')">
-                <i class="fas fa-map-marked-alt"></i> Live Map
-            </button>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search routes, stops...">
+            </div>
 
-            <button class="tab-btn" id="tab-btn-history" onclick="switchTab('history')">
-                <i class="fas fa-history"></i> History
-            </button>
+            <div class="nav-actions">
+                <div class="icon-btn" title="Notifications"><i class="fas fa-bell"></i></div>
+                <div class="icon-btn" title="Toggle Theme"><i class="fas fa-sun"></i></div>
+                <div class="icon-btn" title="Settings"><i class="fas fa-cog"></i></div>
+                <button class="btn-logout" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Controls Row -->
+        <div class="control-row">
+            <!-- Tab Switches -->
+            <div class="tabs-container">
+                <button class="tab-btn active" id="tab-btn-routes" onclick="switchTab('routes')">
+                    <i class="fas fa-route"></i> Routes
+                </button>
+                <button class="tab-btn" id="tab-btn-map" onclick="switchTab('map')">
+                    <i class="fas fa-map-marked-alt"></i> Live Map
+                </button>
+
+                <button class="tab-btn" id="tab-btn-history" onclick="switchTab('history')">
+                    <i class="fas fa-history"></i> History
+                </button>
+            </div>
+
+            <!-- Utility Filters -->
+            <div class="filter-actions">
+                <button class="pill-btn favorites" id="favoritesFilterBtn" onclick="toggleFavoritesOnly()">
+                    <i class="fas fa-star"></i> Favorites
+                </button>
+                <button class="pill-btn refresh" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <div class="live-status">
+                    <div class="pulse-dot"></div> Live
+                </div>
+            </div>
         </div>
 
-        <!-- Utility Filters -->
-        <div class="filter-actions">
-            <button class="pill-btn favorites" id="favoritesFilterBtn" onclick="toggleFavoritesOnly()">
-                <i class="fas fa-star"></i> Favorites
-            </button>
-            <button class="pill-btn refresh" onclick="refreshData()">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-            <div class="live-status">
-                <div class="pulse-dot"></div> Live
+        <!-- ─── TAB 1: ROUTES VIEW ─── -->
+        <div class="tab-panel active" id="panel-routes">
+            <div id="fav-title-row" style="display: none;">
+                <h2 class="section-title">Your Favorites <span class="count" id="fav-count">0</span></h2>
+                <div class="routes-list" id="favorites-container"></div>
+            </div>
+
+            <h2 class="section-title">All Active Routes <span class="count" id="routes-count">0</span></h2>
+            <div class="routes-list" id="routes-container">
+                <div style="text-align: center; color: var(--primary); padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <div>Loading transit lines...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── TAB 2: LIVE MAP VIEW ─── -->
+        <div class="tab-panel" id="panel-map">
+            <div class="map-filters" id="mapFiltersContainer">
+                <!-- Dynamic route filter pills go here -->
+            </div>
+            <div class="map-container-box">
+                <div id="live-map"></div>
+            </div>
+        </div>
+
+
+
+        <!-- ─── TAB 4: HISTORY VIEW ─── -->
+        <div class="tab-panel" id="panel-history">
+            <div class="empty-history-box">
+                <div class="history-icon-circle">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3>No activity yet</h3>
+                <p>Track a route and select a active bus line to log location details into your history.</p>
             </div>
         </div>
     </div>
 
-    <!-- ─── TAB 1: ROUTES VIEW ─── -->
-    <div class="tab-panel active" id="panel-routes">
-        <div id="fav-title-row" style="display: none;">
-            <h2 class="section-title">Your Favorites <span class="count" id="fav-count">0</span></h2>
-            <div class="routes-list" id="favorites-container"></div>
-        </div>
+    <script>
+        let allRoutes = [];
+        let allBuses = [];
+        let userFavorites = [];
+        let activeTab = 'routes';
+        let favoritesOnly = false;
 
-        <h2 class="section-title">All Active Routes <span class="count" id="routes-count">0</span></h2>
-        <div class="routes-list" id="routes-container">
-            <div style="text-align: center; color: var(--primary); padding: 40px;">
-                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                <div>Loading transit lines...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ─── TAB 2: LIVE MAP VIEW ─── -->
-    <div class="tab-panel" id="panel-map">
-        <div class="map-filters" id="mapFiltersContainer">
-            <!-- Dynamic route filter pills go here -->
-        </div>
-        <div class="map-container-box">
-            <div id="live-map"></div>
-        </div>
-    </div>
+        // Map variables
+        let leafletMap = null;
+        let mapRoutePill = 'all';
+        let polylineLayers = [];
+        let markerLayers = [];
+        let busMarkerLayers = [];
+        let mapRoutesData = [];
 
 
 
-    <!-- ─── TAB 4: HISTORY VIEW ─── -->
-    <div class="tab-panel" id="panel-history">
-        <div class="empty-history-box">
-            <div class="history-icon-circle">
-                <i class="fas fa-history"></i>
-            </div>
-            <h3>No activity yet</h3>
-            <p>Track a route and select a active bus line to log location details into your history.</p>
-        </div>
-    </div>
-</div>
+        // Harmonious colors for different routes
+        const routeColors = [
+            '#06b6d4', // Cyan
+            '#f59e0b', // Amber/Yellow
+            '#10b981', // Emerald/Green
+            '#a855f7', // Purple
+            '#ec4899', // Pink
+            '#6366f1', // Indigo
+            '#3b82f6', // Blue
+            '#f97316'  // Orange
+        ];
 
-<script>
-    let allRoutes = [];
-    let allBuses = [];
-    let userFavorites = [];
-    let activeTab = 'routes';
-    let favoritesOnly = false;
-    
-    // Map variables
-    let leafletMap = null;
-    let mapRoutePill = 'all';
-    let polylineLayers = [];
-    let markerLayers = [];
-    let busMarkerLayers = [];
-    let mapRoutesData = [];
-
-
-
-    // Harmonious colors for different routes
-    const routeColors = [
-        '#06b6d4', // Cyan
-        '#f59e0b', // Amber/Yellow
-        '#10b981', // Emerald/Green
-        '#a855f7', // Purple
-        '#ec4899', // Pink
-        '#6366f1', // Indigo
-        '#3b82f6', // Blue
-        '#f97316'  // Orange
-    ];
-
-    function handleLogout() {
-        localStorage.clear();
-        window.location.href = '/login?logout=true';
-    }
-
-    // Switch between Dashboard tabs
-    function switchTab(tabId) {
-        activeTab = tabId;
-        
-        // Update Buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(`tab-btn-${tabId}`).classList.add('active');
-        
-        // Update Panels
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.getElementById(`panel-${tabId}`).classList.add('active');
-
-        // Handle Map Tab Initialization
-        if (tabId === 'map') {
-            setTimeout(() => {
-                initLeafletMap();
-            }, 100);
+        function handleLogout() {
+            localStorage.clear();
+            window.location.href = '/login?logout=true';
         }
 
+        // Switch between Dashboard tabs
+        function switchTab(tabId) {
+            activeTab = tabId;
 
-    }
+            // Update Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
 
-    window.onload = async () => {
-        if (!localStorage.getItem('token')) {
-            window.location.href = '/';
-            return;
+            // Update Panels
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`panel-${tabId}`).classList.add('active');
+
+            // Handle Map Tab Initialization
+            if (tabId === 'map') {
+                setTimeout(() => {
+                    initLeafletMap();
+                }, 100);
+            }
+
+
         }
 
-        await refreshData();
-        // Background updates every 5 seconds
-        setInterval(refreshData, 5000);
-        
-        // Real-time search filter
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allRoutes.filter(r => 
-                r.name.toLowerCase().includes(term) || 
-                r.source.toLowerCase().includes(term) || 
-                r.destination.toLowerCase().includes(term)
-            );
-            renderRoutes(filtered);
-        });
-    };
-
-    async function refreshData() {
-        try {
-            const token = localStorage.getItem('token');
-            const [favRes, busRes, routeRes] = await Promise.all([
-                fetch("/api/user/favorites", { headers: { "Authorization": `Bearer ${token}` } }),
-                fetch(`/api/buses/?t=${Date.now()}`),
-                fetch("/api/routes/")
-            ]);
-
-            if (favRes.status === 401) {
-                handleLogout();
+        window.onload = async () => {
+            if (!localStorage.getItem('token')) {
+                window.location.href = '/';
                 return;
             }
 
-            userFavorites = await favRes.json();
-            allBuses = await busRes.json();
-            allRoutes = await routeRes.json();
+            await refreshData();
+            // Background updates every 5 seconds
+            setInterval(refreshData, 5000);
 
-            // Populate total/favorites counts
-            document.getElementById('fav-count').textContent = userFavorites.length;
-            document.getElementById('routes-count').textContent = allRoutes.length;
+            // Real-time search filter
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = allRoutes.filter(r =>
+                    r.name.toLowerCase().includes(term) ||
+                    r.source.toLowerCase().includes(term) ||
+                    r.destination.toLowerCase().includes(term)
+                );
+                renderRoutes(filtered);
+            });
+        };
 
-            renderRoutes(allRoutes);
-            
-            // Background update for Map and Schedule
-            if (activeTab === 'map' && leafletMap) {
-                updateBusLocationsOnMap();
+        async function refreshData() {
+            try {
+                const token = localStorage.getItem('token');
+                const [favRes, busRes, routeRes] = await Promise.all([
+                    fetch("/api/user/favorites", { headers: { "Authorization": `Bearer ${token}` } }),
+                    fetch(`/api/buses/?t=${Date.now()}`),
+                    fetch("/api/routes/")
+                ]);
+
+                if (favRes.status === 401) {
+                    handleLogout();
+                    return;
+                }
+
+                userFavorites = await favRes.json();
+                allBuses = await busRes.json();
+                allRoutes = await routeRes.json();
+
+                // Populate total/favorites counts
+                document.getElementById('fav-count').textContent = userFavorites.length;
+                document.getElementById('routes-count').textContent = allRoutes.length;
+
+                renderRoutes(allRoutes);
+
+                // Background update for Map and Schedule
+                if (activeTab === 'map' && leafletMap) {
+                    updateBusLocationsOnMap();
+                }
+            } catch (e) {
+                console.error("Data refresh failed", e);
             }
-        } catch (e) {
-            console.error("Data refresh failed", e);
         }
-    }
 
-    async function toggleFavorite(routeId, e) {
-        e.stopPropagation();
-        const isFav = userFavorites.some(f => f.route_id === routeId);
-        const token = localStorage.getItem('token');
+        async function toggleFavorite(routeId, e) {
+            e.stopPropagation();
+            const isFav = userFavorites.some(f => f.route_id === routeId);
+            const token = localStorage.getItem('token');
 
-        await fetch(isFav ? `/api/user/favorites/${routeId}` : "/api/user/favorites", {
-            method: isFav ? 'DELETE' : 'POST',
-            headers: { 
-                "Content-Type": "application/json", 
-                "Authorization": `Bearer ${token}` 
-            },
-            body: isFav ? null : JSON.stringify({ route_id: routeId })
-        });
-        await refreshData();
-    }
+            await fetch(isFav ? `/api/user/favorites/${routeId}` : "/api/user/favorites", {
+                method: isFav ? 'DELETE' : 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: isFav ? null : JSON.stringify({ route_id: routeId })
+            });
+            await refreshData();
+        }
 
-    function toggleFavoritesOnly() {
-        favoritesOnly = !favoritesOnly;
-        const btn = document.getElementById('favoritesFilterBtn');
-        btn.classList.toggle('active', favoritesOnly);
-        renderRoutes(allRoutes);
-    }
+        function toggleFavoritesOnly() {
+            favoritesOnly = !favoritesOnly;
+            const btn = document.getElementById('favoritesFilterBtn');
+            btn.classList.toggle('active', favoritesOnly);
+            renderRoutes(allRoutes);
+        }
 
-    function renderRoutes(routes) {
-        const favIds = userFavorites.map(f => f.route_id);
-        
-        let allHtml = '', favHtml = '';
-        let matchedFavsCount = 0;
+        function renderRoutes(routes) {
+            const favIds = userFavorites.map(f => f.route_id);
 
-        routes.forEach((route, idx) => {
-            const isFav = favIds.includes(route.id);
-            const liveBuses = allBuses.filter(b => b.route_id == route.id && b.status === 'RUNNING');
-            
-            let displayId = route.id;
-            let numMatch = route.name.match(/\d+/);
-            if (numMatch) displayId = numMatch[0];
+            let allHtml = '', favHtml = '';
+            let matchedFavsCount = 0;
 
-            const themeColor = routeColors[idx % routeColors.length];
-            const occupancyRate = Math.floor((idx * 17 + 23) % 60) + 15; // Simulated progress & status
+            routes.forEach((route, idx) => {
+                const isFav = favIds.includes(route.id);
+                const liveBuses = allBuses.filter(b => b.route_id == route.id && b.status === 'RUNNING');
 
-            // Staggered status progress line metrics
-            const isModerate = occupancyRate > 40;
-            const progressColor = isModerate ? 'var(--orange-active)' : 'var(--green-active)';
-            const progressText = isModerate ? 'Moderate' : 'Comfortable';
+                let displayId = route.id;
+                let numMatch = route.name.match(/\d+/);
+                if (numMatch) displayId = numMatch[0];
 
-            const cardHtml = `
+                const themeColor = routeColors[idx % routeColors.length];
+                const occupancyRate = Math.floor((idx * 17 + 23) % 60) + 15; // Simulated progress & status
+
+                // Staggered status progress line metrics
+                const isModerate = occupancyRate > 40;
+                const progressColor = isModerate ? 'var(--orange-active)' : 'var(--green-active)';
+                const progressText = isModerate ? 'Moderate' : 'Comfortable';
+
+                const cardHtml = `
             <div class="route-card">
                 <div class="card-left">
                     <div class="route-num-badge" style="background: linear-gradient(135deg, var(--card-bg), ${themeColor}22); border-color: ${themeColor}33; color: ${themeColor};">${displayId}</div>
@@ -979,9 +1031,9 @@
                         <div class="source-name"><i class="fas fa-map-marker-alt"></i> ${route.source}</div>
                         <div class="dest-name">${route.destination}</div>
                         <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
-                            ${liveBuses.length > 0 
-                                ? `<div class="live-tag"><div class="pulse-dot"></div> LIVE: ${liveBuses.length} Buses</div>` 
-                                : `<div class="no-live-tag">No active buses</div>`}
+                            ${liveBuses.length > 0
+                        ? `<div class="live-tag"><div class="pulse-dot"></div> LIVE: ${liveBuses.length} Buses</div>`
+                        : `<div class="no-live-tag">No active buses</div>`}
                         </div>
                         <div class="card-progress-wrapper">
                             <div class="progress-line-bg">
@@ -1000,174 +1052,257 @@
                 </div>
             </div>`;
 
-            if (isFav) {
-                favHtml += cardHtml;
-                matchedFavsCount++;
+                if (isFav) {
+                    favHtml += cardHtml;
+                    matchedFavsCount++;
+                }
+                allHtml += cardHtml;
+            });
+
+            // Toggle Favorites panel block visibility
+            const favPanel = document.getElementById('fav-title-row');
+            if (matchedFavsCount > 0 && !favoritesOnly) {
+                favPanel.style.display = 'block';
+                document.getElementById('favorites-container').innerHTML = favHtml;
+            } else {
+                favPanel.style.display = 'none';
             }
-            allHtml += cardHtml;
-        });
 
-        // Toggle Favorites panel block visibility
-        const favPanel = document.getElementById('fav-title-row');
-        if (matchedFavsCount > 0 && !favoritesOnly) {
-            favPanel.style.display = 'block';
-            document.getElementById('favorites-container').innerHTML = favHtml;
-        } else {
-            favPanel.style.display = 'none';
+            // Apply filters
+            const routesContainer = document.getElementById('routes-container');
+            if (favoritesOnly) {
+                routesContainer.innerHTML = favHtml || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No favorite routes found.</div>';
+            } else {
+                routesContainer.innerHTML = allHtml || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No routes match your search.</div>';
+            }
         }
 
-        // Apply filters
-        const routesContainer = document.getElementById('routes-container');
-        if (favoritesOnly) {
-            routesContainer.innerHTML = favHtml || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No favorite routes found.</div>';
-        } else {
-            routesContainer.innerHTML = allHtml || '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No routes match your search.</div>';
-        }
-    }
-
-    // ─── MAP RENDERING LOGIC ───
-    async function initLeafletMap() {
-        if (leafletMap) return;
-
-        // Coordinates centered on Tumkur city
-        leafletMap = L.map('live-map', {
-            zoomControl: true,
-            attributionControl: true
-        }).setView([13.34, 77.10], 13);
-
-        // Dark Basemap styling from CartoDB
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(leafletMap);
-
-        await drawTransitNetwork();
-    }
-
-    async function drawTransitNetwork() {
-        try {
-            // Fetch stops coordinates for all routes
-            const routesData = [];
-            for (let route of allRoutes) {
-                const res = await fetch(`/api/routes/${route.id}/stops`);
-                const data = await res.json();
-                const stops = data.stops || data;
-                if (stops && stops.length > 0) {
-                    routesData.push({ route, stops });
+        // ─── MAP RENDERING LOGIC ───
+        function snapToRoad(lat, lng, roadCoords) {
+            if (!roadCoords || roadCoords.length === 0) return [lat, lng];
+            let closestPoint = roadCoords[0];
+            let minD = Infinity;
+            for (let i = 0; i < roadCoords.length; i++) {
+                const p = roadCoords[i];
+                const d = (lat - p[0])**2 + (lng - p[1])**2;
+                if (d < minD) {
+                    minD = d;
+                    closestPoint = p;
                 }
             }
-            mapRoutesData = routesData;
-
-            // Generate map filters
-            renderMapFilters();
-
-            // Render stops and routes overlay
-            renderMapOverlays();
-            
-            // Plot initial active buses
-            await updateBusLocationsOnMap();
-
-        } catch (e) {
-            console.error("Failed to build map network overlays", e);
+            return closestPoint;
         }
-    }
 
-    function renderMapFilters() {
-        const filterContainer = document.getElementById('mapFiltersContainer');
-        let html = `<div class="map-filter-pill ${mapRoutePill === 'all' ? 'active' : ''}" onclick="setMapFilter('all')">All Routes</div>`;
-        
-        mapRoutesData.forEach((item, idx) => {
-            const color = routeColors[idx % routeColors.length];
-            let displayId = item.route.id;
-            let numMatch = item.route.name.match(/\d+/);
-            if (numMatch) displayId = numMatch[0];
+        async function initLeafletMap() {
+            if (leafletMap) return;
 
-            html += `
+            // Coordinates centered on Tumkur city
+            leafletMap = L.map('live-map', {
+                zoomControl: true,
+                attributionControl: true
+            }).setView([13.34, 77.10], 13);
+
+            // Dark Basemap styling from CartoDB
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(leafletMap);
+
+            await drawTransitNetwork();
+        }
+
+        function calculateBearing(lat1, lon1, lat2, lon2) {
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lat2Rad = lat2 * Math.PI / 180;
+            const y = Math.sin(dLon) * Math.cos(lat2Rad);
+            const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+            let brng = Math.atan2(y, x) * 180 / Math.PI;
+            return Math.round((brng + 360) % 360);
+        }
+
+        async function drawTransitNetwork() {
+            try {
+                // Fetch stops coordinates for all routes and get road routing from OSRM
+                const routesData = [];
+                const fetchPromises = allRoutes.map(async (route) => {
+                    try {
+                        const res = await fetch(`/api/routes/${route.id}/stops`);
+                        const data = await res.json();
+                        const stops = data.stops || data;
+                        if (stops && stops.length > 0) {
+                            // Query OSRM for the road coordinates connecting these stops
+                            const coordsStr = stops.map(s => `${s.longitude},${s.latitude}`).join(';');
+                            
+                            // Calculate bearings to snap waypoints to the correct direction of travel
+                            const bearings = [];
+                            for (let i = 0; i < stops.length; i++) {
+                                let b = null;
+                                if (i < stops.length - 1) {
+                                    b = calculateBearing(stops[i].latitude, stops[i].longitude, stops[i+1].latitude, stops[i+1].longitude);
+                                } else if (stops.length > 1) {
+                                    b = calculateBearing(stops[i-1].latitude, stops[i-1].longitude, stops[i].latitude, stops[i].longitude);
+                                }
+                                if (b !== null && !isNaN(b)) {
+                                    bearings.push(`${b},45`);
+                                } else {
+                                    bearings.push('');
+                                }
+                            }
+                            const bearingsStr = bearings.join(';');
+                            const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson&bearings=${bearingsStr}`;
+                            let roadCoords = [];
+                            try {
+                                const osrmRes = await fetch(osrmUrl);
+                                const osrmData = await osrmRes.json();
+                                if (osrmData && osrmData.code === "Ok") {
+                                    const raw = osrmData.routes[0].geometry.coordinates;
+                                    roadCoords = raw.map(c => [c[1], c[0]]); // Convert [lng, lat] to [lat, lng]
+                                } else {
+                                    // Fallback without bearings if OSRM returns NoRoute
+                                    const fallbackUrl = `https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson`;
+                                    const fbRes = await fetch(fallbackUrl);
+                                    const fbData = await fbRes.json();
+                                    if (fbData && fbData.code === "Ok") {
+                                        const raw = fbData.routes[0].geometry.coordinates;
+                                        roadCoords = raw.map(c => [c[1], c[0]]);
+                                    }
+                                }
+                            } catch(e) {
+                                console.error("OSRM fetch failed for route", route.id, e);
+                            }
+                            
+                            // Fallback to straight lines if OSRM failed completely
+                            if (roadCoords.length === 0) {
+                                roadCoords = stops.map(s => [s.latitude, s.longitude]);
+                            }
+                            
+                            routesData.push({ route, stops, roadCoords });
+                        }
+                    } catch(e) {
+                        console.error("Failed to load stops for route", route.id, e);
+                    }
+                });
+                await Promise.all(fetchPromises);
+                mapRoutesData = routesData;
+
+                // Generate map filters
+                renderMapFilters();
+
+                // Render stops and routes overlay
+                renderMapOverlays();
+
+                // Plot initial active buses
+                await updateBusLocationsOnMap();
+
+            } catch (e) {
+                console.error("Failed to build map network overlays", e);
+            }
+        }
+
+        function renderMapFilters() {
+            const filterContainer = document.getElementById('mapFiltersContainer');
+            let html = `<div class="map-filter-pill ${mapRoutePill === 'all' ? 'active' : ''}" onclick="setMapFilter('all')">All Routes</div>`;
+
+            mapRoutesData.forEach((item, idx) => {
+                const color = routeColors[idx % routeColors.length];
+                let displayId = item.route.id;
+                let numMatch = item.route.name.match(/\d+/);
+                if (numMatch) displayId = numMatch[0];
+
+                html += `
             <div class="map-filter-pill ${mapRoutePill == item.route.id ? 'active' : ''}" onclick="setMapFilter(${item.route.id})">
                 <div class="map-filter-circle" style="background: ${color};"></div>
                 Route ${displayId}
             </div>`;
-        });
-        filterContainer.innerHTML = html;
-    }
+            });
+            filterContainer.innerHTML = html;
+        }
 
-    function setMapFilter(routeId) {
-        mapRoutePill = routeId;
-        renderMapFilters();
-        renderMapOverlays();
-        updateBusLocationsOnMap();
-    }
+        function setMapFilter(routeId) {
+            mapRoutePill = routeId;
+            renderMapFilters();
+            renderMapOverlays();
+            updateBusLocationsOnMap();
+        }
 
-    function renderMapOverlays() {
-        // Clear existing route overlays
-        polylineLayers.forEach(layer => leafletMap.removeLayer(layer));
-        markerLayers.forEach(layer => leafletMap.removeLayer(layer));
-        polylineLayers = [];
-        markerLayers = [];
+        function renderMapOverlays() {
+            // Clear existing route overlays
+            polylineLayers.forEach(layer => leafletMap.removeLayer(layer));
+            markerLayers.forEach(layer => leafletMap.removeLayer(layer));
+            polylineLayers = [];
+            markerLayers = [];
 
-        mapRoutesData.forEach((item, idx) => {
-            const routeId = item.route.id;
-            if (mapRoutePill !== 'all' && mapRoutePill != routeId) return;
+            mapRoutesData.forEach((item, idx) => {
+                const routeId = item.route.id;
+                if (mapRoutePill !== 'all' && mapRoutePill != routeId) return;
 
-            const color = routeColors[idx % routeColors.length];
-            const coordinates = item.stops.map(s => [s.latitude, s.longitude]);
+                const color = routeColors[idx % routeColors.length];
+                const coordinates = item.roadCoords || item.stops.map(s => [s.latitude, s.longitude]);
 
-            // Draw polyline connecting stops
-            const line = L.polyline(coordinates, {
-                color: color,
-                weight: 4,
-                opacity: 0.8,
-                lineJoin: 'round'
-            }).addTo(leafletMap);
-            polylineLayers.push(line);
-
-            // Draw stops circle markers
-            item.stops.forEach((stop, stopIdx) => {
-                const marker = L.circleMarker([stop.latitude, stop.longitude], {
-                    radius: 5,
+                // Draw polyline connecting stops
+                const line = L.polyline(coordinates, {
                     color: color,
-                    fillColor: '#101323',
-                    fillOpacity: 1,
-                    weight: 2
+                    weight: 4,
+                    opacity: 0.8,
+                    lineJoin: 'round'
                 }).addTo(leafletMap);
+                polylineLayers.push(line);
 
-                marker.bindPopup(`
+                // Draw stops circle markers
+                item.stops.forEach((stop, stopIdx) => {
+                    const marker = L.circleMarker([stop.latitude, stop.longitude], {
+                        radius: 5,
+                        color: color,
+                        fillColor: '#101323',
+                        fillOpacity: 1,
+                        weight: 2
+                    }).addTo(leafletMap);
+
+                    marker.bindPopup(`
                     <h4>${stop.name}</h4>
                     <p>Stop #${stopIdx + 1} on Route ${item.route.name}</p>
                 `);
-                markerLayers.push(marker);
+                    markerLayers.push(marker);
+                });
             });
-        });
 
-        // Zoom map to fit selected overlays
-        if (polylineLayers.length > 0) {
-            const group = new L.featureGroup(polylineLayers);
-            leafletMap.fitBounds(group.getBounds(), { padding: [30, 30] });
+            // Zoom map to fit selected overlays
+            if (polylineLayers.length > 0) {
+                const group = new L.featureGroup(polylineLayers);
+                leafletMap.fitBounds(group.getBounds(), { padding: [30, 30] });
+            }
         }
-    }
 
-    // Live Bus telemetry position plot
-    async function updateBusLocationsOnMap() {
-        if (!leafletMap) return;
+        // Live Bus telemetry position plot
+        async function updateBusLocationsOnMap() {
+            if (!leafletMap) return;
 
-        // Clear existing bus icons
-        busMarkerLayers.forEach(m => leafletMap.removeLayer(m));
-        busMarkerLayers = [];
+            // Clear existing bus icons
+            busMarkerLayers.forEach(m => leafletMap.removeLayer(m));
+            busMarkerLayers = [];
 
-        const activeBuses = allBuses.filter(b => b.status === 'RUNNING');
-        
-        for (let bus of activeBuses) {
-            if (mapRoutePill !== 'all' && mapRoutePill != bus.route_id) continue;
+            const activeBuses = allBuses.filter(b => b.status === 'RUNNING');
 
-            try {
-                const res = await fetch(`/api/location/${bus.id}?t=${Date.now()}`);
-                if (!res.ok) continue;
-                const loc = await res.json();
+            for (let bus of activeBuses) {
+                if (mapRoutePill !== 'all' && mapRoutePill != bus.route_id) continue;
 
-                // Custom glowing bus element
-                const customIcon = L.divIcon({
-                    html: `<div style="
+                try {
+                    const res = await fetch(`/api/location/${bus.id}?t=${Date.now()}`);
+                    if (!res.ok) continue;
+                    const loc = await res.json();
+
+                    // Find corresponding route item to get its road coordinates
+                    const routeItem = mapRoutesData.find(item => item.route.id == bus.route_id);
+                    const roadCoords = routeItem ? routeItem.roadCoords : null;
+
+                    // Snap the bus location to the nearest point on the road geometry
+                    const snapped = snapToRoad(loc.latitude, loc.longitude, roadCoords);
+
+                    // Custom glowing bus element
+                    const customIcon = L.divIcon({
+                        html: `<div style="
                         width: 20px; height: 20px;
                         background: #a855f7;
                         border: 2px solid white;
@@ -1176,26 +1311,27 @@
                         display: flex; justify-content: center; align-items: center;
                         color: white; font-size: 0.65rem; font-weight: bold;
                     "><i class="fas fa-bus" style="font-size: 0.55rem;"></i></div>`,
-                    className: 'custom-bus-icon',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                });
+                        className: 'custom-bus-icon',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
 
-                const busMarker = L.marker([loc.latitude, loc.longitude], { icon: customIcon }).addTo(leafletMap);
-                busMarker.bindPopup(`
+                    const busMarker = L.marker(snapped, { icon: customIcon }).addTo(leafletMap);
+                    busMarker.bindPopup(`
                     <h4>Bus ${bus.bus_number}</h4>
                     <p>Driver: ${bus.driver_name}</p>
                     <p>Status: RUNNING</p>
                 `);
-                busMarkerLayers.push(busMarker);
+                    busMarkerLayers.push(busMarker);
 
-            } catch (e) {
-                // Ignore missing locations
+                } catch (e) {
+                    // Ignore missing locations
+                }
             }
         }
-    }
 
 
-</script>
+    </script>
 </body>
+
 </html>

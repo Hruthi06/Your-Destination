@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Your Bus | Your Destination</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/dist/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-dark: #080914;
@@ -21,21 +24,32 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
             background-image: radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
-                              radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%);
             background-attachment: fixed;
         }
 
-        h1, h2, h3, h4, .bus-num, .track-btn, .btn-back {
+        h1,
+        h2,
+        h3,
+        h4,
+        .bus-num,
+        .track-btn,
+        .btn-back {
             font-family: 'Outfit', sans-serif;
         }
 
@@ -43,13 +57,16 @@
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
             background: #080914;
         }
+
         ::-webkit-scrollbar-thumb {
             background: #252949;
             border-radius: 4px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
             background: #3c4276;
         }
@@ -65,15 +82,20 @@
             margin-bottom: 50px;
             text-align: center;
         }
-        .header h1 { 
-            font-size: 2.5rem; 
-            font-weight: 700; 
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 10px;
             background: linear-gradient(135deg, #ffffff, var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .header p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
 
         .bus-grid {
             display: grid;
@@ -95,13 +117,15 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(20px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
         }
 
         .bus-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            bottom: 0;
             width: 4px;
             background: var(--primary);
             opacity: 0;
@@ -111,7 +135,7 @@
         .bus-card:hover {
             transform: translateY(-6px);
             border-color: rgba(168, 85, 247, 0.25);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 15px var(--primary-glow);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 15px var(--primary-glow);
         }
 
         .bus-card:hover::before {
@@ -129,6 +153,7 @@
             align-items: center;
             gap: 15px;
         }
+
         .bus-icon {
             width: 60px;
             height: 60px;
@@ -141,10 +166,26 @@
             overflow: hidden;
             box-shadow: 0 0 10px var(--primary-glow);
         }
-        .bus-icon img { width: 80%; height: auto; filter: drop-shadow(0 0 2px var(--primary)); }
 
-        .bus-num { font-size: 1.4rem; font-weight: 700; color: white; }
-        .bus-type { font-size: 0.8rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .bus-icon img {
+            width: 80%;
+            height: auto;
+            filter: drop-shadow(0 0 2px var(--primary));
+        }
+
+        .bus-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .bus-type {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
         .status-badge {
             background: rgba(16, 185, 129, 0.1);
@@ -158,18 +199,27 @@
             align-items: center;
             gap: 6px;
         }
-        .pulse { 
-            width: 8px; 
-            height: 8px; 
-            background: var(--green-active); 
-            border-radius: 50%; 
-            animation: pulse-animation 2s infinite; 
+
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--green-active);
+            border-radius: 50%;
+            animation: pulse-animation 2s infinite;
         }
 
         @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
         }
 
         .bus-details {
@@ -181,9 +231,23 @@
             border-bottom: 1px solid var(--glass-border);
         }
 
-        .detail-item { display: flex; flex-direction: column; gap: 4px; }
-        .detail-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .detail-value { font-size: 1rem; font-weight: 600; color: white; }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+        }
 
         .amenities {
             display: flex;
@@ -191,7 +255,10 @@
             font-size: 1.1rem;
             color: var(--text-muted);
         }
-        .amenity-item.active { color: var(--accent); }
+
+        .amenity-item.active {
+            color: var(--accent);
+        }
 
         .footer-info {
             display: flex;
@@ -199,6 +266,7 @@
             align-items: center;
             width: 100%;
         }
+
         .rating {
             color: #fbbf24;
             font-weight: 700;
@@ -217,7 +285,8 @@
             transition: var(--transition);
             box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
         }
-        .track-btn:hover { 
+
+        .track-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(168, 85, 247, 0.55);
             filter: brightness(1.15);
@@ -241,124 +310,135 @@
             gap: 10px;
             font-weight: 600;
             transition: var(--transition);
-            background: rgba(255,255,255,0.03);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             padding: 10px 20px;
             border-radius: 12px;
         }
-        .btn-back:hover { 
-            color: white; 
+
+        .btn-back:hover {
+            color: white;
             border-color: var(--primary);
             background: rgba(168, 85, 247, 0.1);
         }
 
         @media (max-width: 768px) {
-            .bus-grid { grid-template-columns: 1fr; }
-            .btn-back { position: relative; top: 0; left: 0; margin-bottom: 30px; display: inline-flex; }
+            .bus-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-back {
+                position: relative;
+                top: 0;
+                left: 0;
+                margin-bottom: 30px;
+                display: inline-flex;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="bg-glow"></div>
+    <div class="bg-glow"></div>
 
-<a href="user.html" class="btn-back">
-    <i class="fas fa-arrow-left"></i>
-    BACK TO DASHBOARD
-</a>
+    <a href="user.html" class="btn-back">
+        <i class="fas fa-arrow-left"></i>
+        BACK TO DASHBOARD
+    </a>
 
-<div class="container">
-    <div class="header">
-        <h1 id="routeName">Loading Route...</h1>
-        <p>Multiple buses are currently active. Select one to track live.</p>
-    </div>
+    <div class="container">
+        <div class="header">
+            <h1 id="routeName">Loading Route...</h1>
+            <p>Multiple buses are currently active. Select one to track live.</p>
+        </div>
 
-    <div id="busContainer" class="bus-grid">
-        <div class="loading-state">
-            <i class="fas fa-spinner fa-spin"></i> Fetching active buses...
+        <div id="busContainer" class="bus-grid">
+            <div class="loading-state">
+                <i class="fas fa-spinner fa-spin"></i> Fetching active buses...
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const routeId = params.get('route');
-    let routeStops = [];
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const routeId = params.get('route');
+        let routeStops = [];
 
-    window.onload = async () => {
-        if (!routeId) { window.location.href = 'user.html'; return; }
-        
-        // Fetch Route Details
-        try {
-            const res = await fetch(`/api/routes/${routeId}`);
-            const route = await res.json();
-            document.getElementById('routeName').textContent = route.name;
+        window.onload = async () => {
+            if (!routeId) { window.location.href = 'user.html'; return; }
 
-            const stopsRes = await fetch(`/api/routes/${routeId}/stops`);
-            routeStops = await stopsRes.json();
-            if (routeStops.stops) routeStops = routeStops.stops;
-        } catch(e) { console.error(e); }
+            // Fetch Route Details
+            try {
+                const res = await fetch(`/api/routes/${routeId}`);
+                const route = await res.json();
+                document.getElementById('routeName').textContent = route.name;
 
-        fetchBuses();
-        setInterval(fetchBuses, 5000);
-    };
+                const stopsRes = await fetch(`/api/routes/${routeId}/stops`);
+                routeStops = await stopsRes.json();
+                if (routeStops.stops) routeStops = routeStops.stops;
+            } catch (e) { console.error(e); }
 
-    async function fetchBuses() {
-        try {
-            const res = await fetch(`/api/buses/?t=${Date.now()}`);
-            const allBuses = await res.json();
-            const activeBuses = allBuses.filter(b => b.route_id == routeId && b.status === 'RUNNING');
-            
-            if (activeBuses.length === 0) {
-                document.getElementById('busContainer').innerHTML = `
+            fetchBuses();
+            setInterval(fetchBuses, 5000);
+        };
+
+        async function fetchBuses() {
+            try {
+                const res = await fetch(`/api/buses/?t=${Date.now()}`);
+                const allBuses = await res.json();
+                const activeBuses = allBuses.filter(b => b.route_id == routeId && b.status === 'RUNNING');
+
+                if (activeBuses.length === 0) {
+                    document.getElementById('busContainer').innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 60px;">
                         <i class="fas fa-clock" style="font-size: 3rem; color: var(--glass-border); margin-bottom: 20px;"></i>
                         <h2>No live buses at the moment</h2>
                         <p style="color: var(--text-muted); margin-top: 10px;">Please check back in a few minutes.</p>
                     </div>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            // Fetch locations for all active buses
-            const busData = await Promise.all(activeBuses.map(async b => {
-                try {
-                    const locRes = await fetch(`/api/location/${b.id}?t=${Date.now()}`);
-                    const loc = await locRes.json();
-                    
-                    // Find next stop
-                    let nextStop = "End of Route";
-                    if (routeStops.length > 0) {
-                        let minDist = Infinity;
-                        let closestIdx = 0;
-                        routeStops.forEach((s, idx) => {
-                            const d = Math.sqrt((loc.latitude - s.latitude)**2 + (loc.longitude - s.longitude)**2);
-                            if (d < minDist) { minDist = d; closestIdx = idx; }
-                        });
-                        // Assume next stop is closestIdx + 1 (simplified)
-                        if (closestIdx + 1 < routeStops.length) {
-                            nextStop = routeStops[closestIdx + 1].name;
-                        } else {
-                            nextStop = routeStops[closestIdx].name;
+                // Fetch locations for all active buses
+                const busData = await Promise.all(activeBuses.map(async b => {
+                    try {
+                        const locRes = await fetch(`/api/location/${b.id}?t=${Date.now()}`);
+                        const loc = await locRes.json();
+
+                        // Find next stop
+                        let nextStop = "End of Route";
+                        if (routeStops.length > 0) {
+                            let minDist = Infinity;
+                            let closestIdx = 0;
+                            routeStops.forEach((s, idx) => {
+                                const d = Math.sqrt((loc.latitude - s.latitude) ** 2 + (loc.longitude - s.longitude) ** 2);
+                                if (d < minDist) { minDist = d; closestIdx = idx; }
+                            });
+                            // Assume next stop is closestIdx + 1 (simplified)
+                            if (closestIdx + 1 < routeStops.length) {
+                                nextStop = routeStops[closestIdx + 1].name;
+                            } else {
+                                nextStop = routeStops[closestIdx].name;
+                            }
                         }
-                    }
-                    return { ...b, nextStop };
-                } catch(e) { return { ...b, nextStop: "Calculating..." }; }
-            }));
+                        return { ...b, nextStop };
+                    } catch (e) { return { ...b, nextStop: "Calculating..." }; }
+                }));
 
-            renderBuses(busData);
-        } catch(e) { console.error(e); }
-    }
+                renderBuses(busData);
+            } catch (e) { console.error(e); }
+        }
 
-    function renderBuses(buses) {
-        const container = document.getElementById('busContainer');
-        container.innerHTML = buses.map((b, i) => {
-            const occupancy = Math.floor(Math.random() * 20) + 15;
-            const capacity = b.capacity || 50;
-            const rating = (4 + Math.random()).toFixed(1);
-            const type = i % 2 === 0 ? "AC Sleeper" : "Express Non-AC";
-            
-            return `
+        function renderBuses(buses) {
+            const container = document.getElementById('busContainer');
+            container.innerHTML = buses.map((b, i) => {
+                const occupancy = Math.floor(Math.random() * 20) + 15;
+                const capacity = b.capacity || 50;
+                const rating = (4 + Math.random()).toFixed(1);
+                const type = i % 2 === 0 ? "AC Sleeper" : "Express Non-AC";
+
+                return `
                 <div class="bus-card" onclick="trackBus(${b.id})">
                     <div class="bus-header">
                         <div class="bus-id">
@@ -404,12 +484,13 @@
                     </div>
                 </div>
             `;
-        }).join('');
-    }
+            }).join('');
+        }
 
-    function trackBus(busId) {
-        window.location.href = `map.html?route=${routeId}&bus=${busId}`;
-    }
-</script>
+        function trackBus(busId) {
+            window.location.href = `map.html?route=${routeId}&bus=${busId}`;
+        }
+    </script>
 </body>
+
 </html>
